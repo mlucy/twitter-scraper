@@ -61,12 +61,28 @@ def get_tweets(user, pages=25, media_only=False):
                         if style.startswith('background'):
                             tmp = style.split('/')[-1]
                             video_id = tmp[:tmp.index('.')]
-                            videos.append({'id': video_id})
+                            thumb = style.split("'")[-2]
+                            videos.append({'id': video_id, 'thumb': thumb})
+
+                iframes = []
+                iframe_containers = tweet.find('.js-macaw-cards-iframe-container')
+                for iframe_container in iframe_containers:
+                    data_src = iframe_container.attrs['data-src']
+                    data_url = 'https://twitter.com' + data_src
+                    out = {'url': data_url, 'images': []}
+                    res = session.get(data_url, headers=headers)
+                    for image in res.html.find('.tcu-imageWrapper'):
+                        raw = image.attrs['data-style']
+                        image_url = raw.split('(')[-1].split(')')[0]
+                        out['images'].append(image_url)
+                    iframes.append(out)
+
                 tweets.append({'tweetId': tweetId, 'time': time, 'text': text,
                                'replies': replies, 'retweets': retweets, 'likes': likes, 
                                'entries': {
                                     'hashtags': hashtags, 'urls': urls,
-                                    'photos': photos, 'videos': videos
+                                    'photos': photos, 'videos': videos,
+                                    'iframes': iframes,
                                 }
                                })
 
