@@ -5,10 +5,13 @@ from datetime import datetime
 session = HTMLSession()
 
 
-def get_tweets(user, pages=25):
+def get_tweets(user, pages=25, media_only=False):
     """Gets tweets for a given user, via the Twitter frontend API."""
 
-    url = f'https://twitter.com/i/profiles/show/{user}/timeline/tweets?include_available_features=1&include_entities=1&include_new_items_bar=true'
+    if media_only:
+        url = f'https://twitter.com/i/profiles/show/{user}/media_timeline?include_available_features=1&include_entities=1&include_new_items_bar=true'
+    else:
+        url = f'https://twitter.com/i/profiles/show/{user}/timeline/tweets?include_available_features=1&include_entities=1&include_new_items_bar=true'
     headers = {
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Referer': f'https://twitter.com/{user}',
